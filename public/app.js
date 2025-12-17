@@ -1,4 +1,6 @@
-const API_URL = 'http://localhost:9000/api';
+// Use a relative API path so the frontend works both locally and when deployed
+// Server serves API at /api; using a relative path avoids hardcoding host/port.
+const API_URL = '/api';
 
 let currentQuery = '';
 let currentLocation = '';
