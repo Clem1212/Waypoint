@@ -1,0 +1,914 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WayPoint News archiver - projectAlpha</title>
+<link rel="stylesheet" href="path/to/font-awesome/css/font-awesome.min.css">
+ <link rel="stylesheet" href="path/to/bootstrap/css/bootstrap.min.css">
+<link rel="stylesheet" href="path/to/font-awesome/css/font-awesome.min.css">
+    <link rel="icon" type="image/x-icon" href="logo.png">
+     <script src="https://kit.fontawesome.com/30eb1ffcab.js" crossorigin="anonymous"></script>
+    <style>
+        :root {
+            --bg-main: #0e0b1f;
+            --bg-surface: #14122b;
+            --bg-surface-soft: #1b1840;
+            --accent-primary: #7b6cff;
+            --accent-secondary: #9f8cff;
+            --accent-pink: #c77dff;
+            --text-primary: #f4f4ff;
+            --text-secondary: #b8b6e3;
+            --text-muted: #8d8bb8;
+            --border-soft: rgba(255,255,255,0.08);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: radial-gradient(1200px 600px at top right, #241f55 0%, #0e0b1f 60%);
+            min-height: 100vh;
+            color: var(--text-primary);
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            background: linear-gradient(180deg, rgba(20,18,43,0.95), rgba(20,18,43,0.85));
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border-soft);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 18px 24px;
+            display: flex;
+            align-items: center;
+            gap: 24px;
+            flex-wrap: wrap;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .logo-icon {
+            width: 48px;
+            height: 48px;
+        }
+
+        .logo h1 {
+            font-size: 24px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+
+        .search-container {
+            flex: 1;
+            display: flex;
+            gap: 12px;
+            min-width: 320px;
+            max-width: 600px;
+        }
+
+        #searchInput {
+            flex: 1;
+            padding: 14px 22px;
+            border-radius: 12px;
+            background: var(--bg-surface-soft);
+            border: 1px solid var(--border-soft);
+            color: var(--text-primary);
+            font-size: 15px;
+            outline: none;
+            transition: all 0.2s ease;
+        }
+
+        #searchInput::placeholder {
+            color: var(--text-muted);
+        }
+
+        #searchInput:focus {
+            border-color: var(--accent-primary);
+            box-shadow: 0 0 0 3px rgba(123,108,255,0.15);
+        }
+
+        #searchBtn {
+            padding: 14px 32px;
+            border-radius: 12px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 15px;
+            color: white;
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            box-shadow: 0 4px 16px rgba(123,108,255,0.3);
+            transition: all 0.2s ease;
+        }
+
+        #searchBtn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(123,108,255,0.4);
+        }
+
+        .location-container {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--bg-surface-soft);
+            padding: 11px 18px;
+            border-radius: 12px;
+            border: 1px solid var(--border-soft);
+            transition: all 0.2s ease;
+        }
+
+        .location-container:hover {
+            border-color: rgba(255,255,255,0.12);
+        }
+
+        #locationInput {
+            background: transparent;
+            border: none;
+            outline: none;
+            color: var(--text-secondary);
+            font-size: 14px;
+            width: 140px;
+        }
+
+        #refreshBtn {
+            padding: 11px 24px;
+            border-radius: 12px;
+            background: transparent;
+            border: 1px solid var(--accent-primary);
+            color: var(--accent-primary);
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.2s ease;
+        }
+
+        #refreshBtn:hover {
+            background: var(--accent-primary);
+            color: white;
+            box-shadow: 0 4px 16px rgba(123,108,255,0.3);
+        }
+
+        .platform-nav {
+            background: rgba(20,18,43,0.7);
+            backdrop-filter: blur(10px);
+            padding: 16px 24px;
+            display: flex;
+            gap: 12px;
+            overflow-x: auto;
+            border-bottom: 1px solid var(--border-soft);
+        }
+
+        .platform-nav::-webkit-scrollbar {
+            height: 6px;
+        }
+
+        .platform-nav::-webkit-scrollbar-thumb {
+            background: var(--accent-primary);
+            border-radius: 3px;
+        }
+
+        .platform-btn {
+            padding: 10px 20px;
+            border-radius: 10px;
+            background: var(--bg-surface-soft);
+            border: 1px solid var(--border-soft);
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            white-space: nowrap;
+            transition: all 0.2s ease;
+        }
+
+        .platform-btn:hover, .platform-btn.active {
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            color: white;
+            border-color: transparent;
+            transform: translateY(-1px);
+        }
+
+        main {
+            flex: 1;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px 24px 120px;
+            width: 100%;
+        }
+
+        .section-title {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 24px;
+            letter-spacing: -0.5px;
+        }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 24px;
+            margin-bottom: 48px;
+        }
+
+        .content-card {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-soft);
+            border-radius: 14px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .content-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 32px rgba(0,0,0,0.5);
+            border-color: rgba(255,255,255,0.12);
+        }
+
+        .thumbnail-wrapper {
+            position: relative;
+            width: 100%;
+            padding-top: 56.25%; /* 16:9 */
+            background: linear-gradient(135deg, #2a275c, #1b1840);
+            overflow: hidden;
+        }
+
+        .content-thumbnail {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .content-info {
+            padding: 16px;
+        }
+
+        .content-title {
+            font-size: 16px;
+            font-weight: 600;
+            line-height: 1.4;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .content-meta {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .content-source {
+            color: var(--accent-secondary);
+            font-weight: 600;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 80px 20px;
+        }
+
+        .spinner {
+            width: 46px;
+            height: 46px;
+            border: 4px solid rgba(255,255,255,0.15);
+            border-top-color: var(--accent-primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(180deg, rgba(20,18,43,0.95), rgba(20,18,43,0.98));
+            backdrop-filter: blur(20px);
+            border-top: 1px solid var(--border-soft);
+            z-index: 100;
+        }
+
+        .filter-nav {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 16px 24px;
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        .filter-btn {
+            padding: 12px 32px;
+            border-radius: 10px;
+            background: var(--bg-surface-soft);
+            border: 1px solid var(--border-soft);
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+
+        .filter-btn:hover {
+            background: var(--bg-surface);
+            border-color: rgba(255,255,255,0.12);
+        }
+
+        .filter-btn.active {
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            color: white;
+            border-color: transparent;
+            box-shadow: 0 4px 16px rgba(123,108,255,0.3);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 100px 20px;
+        }
+
+        @media (max-width: 768px) {
+            .content-grid {
+                grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+                gap: 16px;
+            }
+
+            .search-container {
+                min-width: 100%;
+                max-width: 100%;
+            }
+
+            main {
+                padding: 24px 20px 120px;
+            }
+        }
+
+         :root {
+            --bg-main: #0e0b1f;
+            --bg-surface: #14122b;
+            --bg-surface-soft: #1b1840;
+            --accent-primary: #7b6cff;
+            --accent-secondary: #9f8cff;
+            --accent-pink: #c77dff;
+            --text-primary: #f4f4ff;
+            --text-secondary: #b8b6e3;
+            --text-muted: #8d8bb8;
+            --border-soft: rgba(255,255,255,0.08);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: radial-gradient(1200px 600px at top right, #241f55 0%, #0e0b1f 60%);
+            min-height: 100vh;
+            color: var(--text-primary);
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            background: linear-gradient(180deg, rgba(20,18,43,0.95), rgba(20,18,43,0.85));
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border-soft);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 18px 24px;
+            display: flex;
+            align-items: center;
+            gap: 24px;
+            flex-wrap: wrap;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .logo-icon {
+            width: 48px;
+            height: 48px;
+        }
+
+        .logo h1 {
+            font-size: 24px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+
+        #searchInput {
+            flex: 1;
+            padding: 14px 22px;
+            border-radius: 12px;
+            background: var(--bg-surface-soft);
+            border: 1px solid var(--border-soft);
+            color: var(--text-primary);
+            font-size: 15px;
+            outline: none;
+            transition: all 0.2s ease;
+        }
+
+        #searchInput::placeholder {
+            color: var(--text-muted);
+        }
+
+        #searchInput:focus {
+            border-color: var(--accent-primary);
+            box-shadow: 0 0 0 3px rgba(123,108,255,0.15);
+        }
+
+        #searchBtn {
+            padding: 14px 32px;
+            border-radius: 12px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 15px;
+            color: white;
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            box-shadow: 0 4px 16px rgba(123,108,255,0.3);
+            transition: all 0.2s ease;
+        }
+
+        #searchBtn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(123,108,255,0.4);
+        }
+
+        .search-container {
+            flex: 1;
+            display: flex;
+            gap: 12px;
+            min-width: 320px;
+            max-width: 600px;
+        }
+
+        .location-container {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--bg-surface-soft);
+            padding: 11px 18px;
+            border-radius: 12px;
+            border: 1px solid var(--border-soft);
+            transition: all 0.2s ease;
+        }
+
+        .location-container:hover {
+            border-color: rgba(255,255,255,0.12);
+        }
+
+        #locationInput {
+            background: transparent;
+            border: none;
+            outline: none;
+            color: var(--text-secondary);
+            font-size: 14px;
+            width: 140px;
+        }
+
+        #refreshBtn {
+            padding: 11px 24px;
+            border-radius: 12px;
+            background: transparent;
+            border: 1px solid var(--accent-primary);
+            color: var(--accent-primary);
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.2s ease;
+        }
+
+        #refreshBtn:hover {
+            background: var(--accent-primary);
+            color: white;
+            box-shadow: 0 4px 16px rgba(123,108,255,0.3);
+        }
+
+        .platform-nav {
+            background: rgba(20,18,43,0.7);
+            backdrop-filter: blur(10px);
+            padding: 16px 24px;
+            display: flex;
+            gap: 12px;
+            overflow-x: auto;
+            border-bottom: 1px solid var(--border-soft);
+        }
+
+        .platform-nav::-webkit-scrollbar {
+            height: 6px;
+        }
+
+        .platform-nav::-webkit-scrollbar-thumb {
+            background: var(--accent-primary);
+            border-radius: 3px;
+        }
+
+        .platform-btn {
+            padding: 10px 20px;
+            border-radius: 10px;
+            background: var(--bg-surface-soft);
+            border: 1px solid var(--border-soft);
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            white-space: nowrap;
+            transition: all 0.2s ease;
+        }
+
+        .platform-btn:hover, .platform-btn.active {
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            color: white;
+            border-color: transparent;
+            transform: translateY(-1px);
+        }
+
+        main {
+            flex: 1;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px 24px 120px;
+            width: 100%;
+        }
+
+        .section-title {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 24px;
+            letter-spacing: -0.5px;
+        }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 24px;
+            margin-bottom: 48px;
+        }
+
+        .content-card {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-soft);
+            border-radius: 14px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .content-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 32px rgba(0,0,0,0.5);
+            border-color: rgba(255,255,255,0.12);
+        }
+
+        .thumbnail-wrapper {
+            position: relative;
+            width: 100%;
+            padding-top: 56.25%;
+            background: linear-gradient(135deg, #2a275c, #1b1840);
+            overflow: hidden;
+        }
+
+        .content-thumbnail {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .content-info {
+            padding: 16px;
+        }
+
+        .content-title {
+            font-size: 16px;
+            font-weight: 600;
+            line-height: 1.4;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .content-meta {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .content-source {
+            color: var(--accent-secondary);
+            font-weight: 600;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 80px 20px;
+        }
+
+        .spinner {
+            width: 46px;
+            height: 46px;
+            border: 4px solid rgba(255,255,255,0.15);
+            border-top-color: var(--accent-primary);
+            border-radius: 50%;
+            animation: spin-loader 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin-loader {
+            to { transform: rotate(360deg); }
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(180deg, rgba(20,18,43,0.95), rgba(20,18,43,0.98));
+            backdrop-filter: blur(20px);
+            border-top: 1px solid var(--border-soft);
+            z-index: 100;
+        }
+
+        .filter-nav {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 16px 24px;
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        .filter-btn {
+            padding: 12px 32px;
+            border-radius: 10px;
+            background: var(--bg-surface-soft);
+            border: 1px solid var(--border-soft);
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+
+        .filter-btn:hover {
+            background: var(--bg-surface);
+            border-color: rgba(255,255,255,0.12);
+        }
+
+        .filter-btn.active {
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            color: white;
+            border-color: transparent;
+            box-shadow: 0 4px 16px rgba(123,108,255,0.3);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 100px 20px;
+        }
+
+        @media (max-width: 768px) {
+            .content-grid {
+                grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+                gap: 16px;
+            }
+
+            .search-container {
+                min-width: 100%;
+                max-width: 100%;
+            }
+
+            main {
+                padding: 24px 20px 120px;
+            }
+        }
+
+        /* Animated Logo Styles */
+        .swirl-logo {
+            filter: drop-shadow(0 5px 20px rgba(139, 92, 246, 0.5));
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0px);
+            }
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+
+        .layer-1 {
+            animation: spin-slow 25s linear infinite;
+            transform-origin: center;
+        }
+
+        .layer-2 {
+            animation: spin-medium 20s linear infinite;
+            transform-origin: center;
+        }
+
+        .layer-3 {
+            animation: spin-fast 15s linear infinite;
+            transform-origin: center;
+        }
+
+        .layer-4 {
+            animation: spin-faster 12s linear infinite;
+            transform-origin: center;
+        }
+
+        @keyframes spin-slow {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        @keyframes spin-medium {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(-360deg); }
+        }
+
+        @keyframes spin-fast {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        @keyframes spin-faster {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(-360deg); }
+        }
+
+        .swirl-logo:hover {
+            filter: drop-shadow(0 8px 30px rgba(139, 92, 246, 0.8));
+            animation: float 3s ease-in-out infinite;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <div class="logo">
+                <svg class="logo-icon" viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <radialGradient id="darkPurple" cx="30%" cy="30%">
+                            <stop offset="0%" style="stop-color:#5B21B6;stop-opacity:1" />
+                            <stop offset="100%" style="stop-color:#7C3AED;stop-opacity:1" />
+                        </radialGradient>
+                        <radialGradient id="brightPurple" cx="50%" cy="50%">
+                            <stop offset="0%" style="stop-color:#A78BFA;stop-opacity:1" />
+                            <stop offset="100%" style="stop-color:#8B5CF6;stop-opacity:1" />
+                        </radialGradient>
+                        <radialGradient id="indigo" cx="50%" cy="50%">
+                            <stop offset="0%" style="stop-color:#818CF8;stop-opacity:1" />
+                            <stop offset="100%" style="stop-color:#6366F1;stop-opacity:1" />
+                        </radialGradient>
+                        <radialGradient id="blue" cx="70%" cy="70%">
+                            <stop offset="0%" style="stop-color:#60A5FA;stop-opacity:1" />
+                            <stop offset="100%" style="stop-color:#3B82F6;stop-opacity:1" />
+                        </radialGradient>
+                    </defs>
+                    <path d="M 200,50 C 110,50 40,120 40,200 C 40,280 110,350 190,350 C 250,350 300,310 320,255 C 310,290 270,315 225,315 C 165,315 115,265 115,205 C 115,155 150,115 195,105 Q 180,85 155,75 Q 175,60 200,50 Z" fill="url(#darkPurple)" />
+                    <path d="M 240,70 C 300,85 345,140 345,205 C 345,285 280,350 200,350 C 140,350 90,310 70,255 C 85,295 125,325 175,330 C 240,335 295,285 295,220 C 295,165 255,120 205,110 Q 220,90 245,80 Q 242,75 240,70 Z" fill="url(#brightPurple)" />
+                    <path d="M 280,100 C 320,130 345,170 345,215 C 345,270 310,315 265,335 Q 270,320 270,305 C 270,255 235,215 190,205 C 160,200 135,215 125,240 Q 115,225 110,205 C 120,150 165,110 220,100 Q 250,95 280,100 Z" fill="url(#indigo)" />
+                    <path d="M 200,50 C 250,50 295,75 325,115 Q 310,100 290,90 C 260,75 230,70 200,75 C 165,80 135,95 115,120 Q 125,95 145,75 Q 170,55 200,50 Z" fill="url(#blue)" />
+                    <path d="M 180,140 C 210,135 240,150 250,180 C 258,205 250,230 230,245 Q 240,230 240,215 C 240,190 225,170 200,165 C 180,162 165,172 160,190 Q 165,165 180,140 Z" fill="url(#blue)" opacity="0.8" />
+                </svg>
+            </div>
+            <div class="search-container">
+                <input type="text" id="searchInput" placeholder="Search...">
+                <button id="searchBtn"><i class="fa-solid fa-magnifying-glass"></i></button>
+            </div>
+            <div class="location-container">
+                <span><i class="fa fa-map-pin"></i></span>
+                <input type="text" id="locationInput" placeholder="Your location">
+            </div>
+            <button id="refreshBtn"> Refresh</button>
+        </div>
+    </header>
+
+    <footer>
+        <nav class="filter-nav">
+            <button class="filter-btn active" data-filter="all">All</button>
+            <button class="filter-btn" data-filter="social">Social</button>
+            <button class="filter-btn" data-filter="news">News</button>
+        </nav>
+    </footer>
+
+    <nav class="platform-nav">
+        <button class="platform-btn" data-platform="youtube"><i class="fa-brands fa-youtube"></i> YouTube</button>
+        <button class="platform-btn" data-platform="tiktok"><i class="fa-brands fa-tiktok"></i> TikTok</button>
+        <button class="platform-btn" data-platform="instagram"><i class="fa-brands fa-instagram"></i> Instagram</button>
+        <button class="platform-btn" data-platform="twitch"><i class="fa-brands fa-twitch"></i> Twitch</button>
+        <button class="platform-btn" data-platform="cnn"><i class="fa-solid fa-newspaper"></i> CNN</button>
+        <button class="platform-btn" data-platform="fox"><i class="fa-regular fa-newspaper"></i> Fox</button>
+        <button class="platform-btn" data-platform="bbc"><i class="fa-solid fa-newspaper"></i> BBC</button>
+        <button class="platform-btn" data-platform="local"><i class="fa-solid fa-map-pin"></i> Local</button>
+    </nav>
+
+    <main>
+        <div id="loading" class="loading hidden">
+            <div class="spinner"></div>
+            <p>Discovering content...</p>
+        </div>
+
+        <div id="results">
+            <div class="content-grid" id="contentGrid"></div>
+        </div>
+
+        <div id="emptyState" class="empty-state">
+               <svg class="swirl-logo" viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg" style="height:13%;width:13%">
+                <defs>
+                    <radialGradient id="darkPurpleAnim" cx="30%" cy="30%">
+                        <stop offset="0%" style="stop-color:#5B21B6;stop-opacity:1" />
+                        <stop offset="100%" style="stop-color:#7C3AED;stop-opacity:1" />
+                    </radialGradient>
+                    <radialGradient id="brightPurpleAnim" cx="50%" cy="50%">
+                        <stop offset="0%" style="stop-color:#A78BFA;stop-opacity:1" />
+                        <stop offset="100%" style="stop-color:#8B5CF6;stop-opacity:1" />
+                    </radialGradient>
+                    <radialGradient id="indigoAnim" cx="50%" cy="50%">
+                        <stop offset="0%" style="stop-color:#818CF8;stop-opacity:1" />
+                        <stop offset="100%" style="stop-color:#6366F1;stop-opacity:1" />
+                    </radialGradient>
+                    <radialGradient id="blueAnim" cx="70%" cy="70%">
+                        <stop offset="0%" style="stop-color:#60A5FA;stop-opacity:1" />
+                        <stop offset="100%" style="stop-color:#3B82F6;stop-opacity:1" />
+                    </radialGradient>
+                </defs>
+                
+                <g class="layer-1">
+                    <path d="M 200,50 C 110,50 40,120 40,200 C 40,280 110,350 190,350 C 250,350 300,310 320,255 C 310,290 270,315 225,315 C 165,315 115,265 115,205 C 115,155 150,115 195,105 Q 180,85 155,75 Q 175,60 200,50 Z" fill="url(#darkPurpleAnim)" />
+                </g>
+                
+                <g class="layer-2">
+                    <path d="M 240,70 C 300,85 345,140 345,205 C 345,285 280,350 200,350 C 140,350 90,310 70,255 C 85,295 125,325 175,330 C 240,335 295,285 295,220 C 295,165 255,120 205,110 Q 220,90 245,80 Q 242,75 240,70 Z" fill="url(#brightPurpleAnim)" />
+                </g>
+                
+                <g class="layer-3">
+                    <path d="M 280,100 C 320,130 345,170 345,215 C 345,270 310,315 265,335 Q 270,320 270,305 C 270,255 235,215 190,205 C 160,200 135,215 125,240 Q 115,225 110,205 C 120,150 165,110 220,100 Q 250,95 280,100 Z" fill="url(#indigoAnim)" />
+                </g>
+                
+                <g class="layer-4">
+                    <path d="M 200,50 C 250,50 295,75 325,115 Q 310,100 290,90 C 260,75 230,70 200,75 C 165,80 135,95 115,120 Q 125,95 145,75 Q 170,55 200,50 Z" fill="url(#blueAnim)" />
+                    <path d="M 180,140 C 210,135 240,150 250,180 C 258,205 250,230 230,245 Q 240,230 240,215 C 240,190 225,170 200,165 C 180,162 165,172 160,190 Q 165,165 180,140 Z" fill="url(#blueAnim)" opacity="0.8" />
+                </g>
+            </svg>
+        </div>
+    </main>
+
+    <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,613 @@
+waypoint ai vibe coded
+npm run dev
+PROJECT ALPHA
+svg 
+
+<svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- Gradients for flowing swirl effect -->
+    <radialGradient id="darkPurple" cx="30%" cy="30%">
+      <stop offset="0%" style="stop-color:#5B21B6;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#7C3AED;stop-opacity:1" />
+    </radialGradient>
+    
+    <radialGradient id="brightPurple" cx="50%" cy="50%">
+      <stop offset="0%" style="stop-color:#A78BFA;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#8B5CF6;stop-opacity:1" />
+    </radialGradient>
+    
+    <radialGradient id="indigo" cx="50%" cy="50%">
+      <stop offset="0%" style="stop-color:#818CF8;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#6366F1;stop-opacity:1" />
+    </radialGradient>
+    
+    <radialGradient id="blue" cx="70%" cy="70%">
+      <stop offset="0%" style="stop-color:#60A5FA;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#3B82F6;stop-opacity:1" />
+    </radialGradient>
+  </defs>
+  
+  <!-- Main circular swirl - bottom layer (dark purple) -->
+  <path d="M 10,2.5 
+           C 5.5,2.5 2,6 2,10
+           C 2,14 5.5,17.5 9.5,17.5
+           C 12.5,17.5 15,15.5 16,12.75
+           C 15.5,14.5 13.5,15.75 11.25,15.75
+           C 8.25,15.75 5.75,13.25 5.75,10.25
+           C 5.75,7.75 7.5,5.75 9.75,5.25
+           Q 9,4.25 7.75,3.75
+           Q 8.75,3 10,2.5 Z"
+        fill="url(#darkPurple)" />
+  
+  <!-- Middle swirl layer (bright purple/indigo) -->
+  <path d="M 12,3.5
+           C 15,4.25 17.25,7 17.25,10.25
+           C 17.25,14.25 14,17.5 10,17.5
+           C 7,17.5 4.5,15.5 3.5,12.75
+           C 4.25,14.75 6.25,16.25 8.75,16.5
+           C 12,16.75 14.75,14.25 14.75,11
+           C 14.75,8.25 12.75,6 10.25,5.5
+           Q 11,4.5 12.25,4
+           Q 12.1,3.75 12,3.5 Z"
+        fill="url(#brightPurple)" />
+  
+  <!-- Upper swirl (indigo) -->
+  <path d="M 14,5
+           C 16,6.5 17.25,8.5 17.25,10.75
+           C 17.25,13.5 15.5,15.75 13.25,16.75
+           Q 13.5,16 13.5,15.25
+           C 13.5,12.75 11.75,10.75 9.5,10.25
+           C 8,10 6.75,10.75 6.25,12
+           Q 5.75,11.25 5.5,10.25
+           C 6,7.5 8.25,5.5 11,5
+           Q 12.5,4.75 14,5 Z"
+        fill="url(#indigo)" />
+  
+  <!-- Top accent swirl (blue) -->
+  <path d="M 10,2.5
+           C 12.5,2.5 14.75,3.75 16.25,5.75
+           Q 15.5,5 14.5,4.5
+           C 13,3.75 11.5,3.5 10,3.75
+           C 8.25,4 6.75,4.75 5.75,6
+           Q 6.25,4.75 7.25,3.75
+           Q 8.5,2.75 10,2.5 Z"
+        fill="url(#blue)" />
+  
+  <!-- Small inner swirl accent -->
+  <path d="M 9,7
+           C 10.5,6.75 12,7.5 12.5,9
+           C 12.9,10.25 12.5,11.5 11.5,12.25
+           Q 12,11.5 12,10.75
+           C 12,9.5 11.25,8.5 10,8.25
+           C 9,8.1 8.25,8.6 8,9.5
+           Q 8.25,8.25 9,7 Z"
+        fill="url(#blue)"
+        opacity="0.8" />
+</svg>
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WayPoint</title>
+    <style>
+        :root {
+            --bg-main: #0e0b1f;
+            --bg-surface: #14122b;
+            --bg-surface-soft: #1b1840;
+            --accent-primary: #7b6cff;
+            --accent-secondary: #9f8cff;
+            --accent-pink: #c77dff;
+            --text-primary: #f4f4ff;
+            --text-secondary: #b8b6e3;
+            --text-muted: #8d8bb8;
+            --border-soft: rgba(255,255,255,0.08);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: radial-gradient(1200px 600px at top right, #241f55 0%, #0e0b1f 60%);
+            min-height: 100vh;
+            color: var(--text-primary);
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            background: linear-gradient(180deg, rgba(20,18,43,0.95), rgba(20,18,43,0.85));
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border-soft);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 18px 24px;
+            display: flex;
+            align-items: center;
+            gap: 24px;
+            flex-wrap: wrap;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-svg {
+            width: 40px;
+            height: 40px;
+        }
+
+        .logo-text {
+            font-size: 24px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+
+        .search-container {
+            flex: 1;
+            display: flex;
+            gap: 12px;
+            min-width: 320px;
+            max-width: 600px;
+        }
+
+        #searchInput {
+            flex: 1;
+            padding: 14px 22px;
+            border-radius: 12px;
+            background: var(--bg-surface-soft);
+            border: 1px solid var(--border-soft);
+            color: var(--text-primary);
+            font-size: 15px;
+            outline: none;
+            transition: all 0.2s ease;
+        }
+
+        #searchInput::placeholder {
+            color: var(--text-muted);
+        }
+
+        #searchInput:focus {
+            border-color: var(--accent-primary);
+            box-shadow: 0 0 0 3px rgba(123,108,255,0.15);
+        }
+
+        #searchBtn {
+            padding: 14px 32px;
+            border-radius: 12px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 15px;
+            color: white;
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            box-shadow: 0 4px 16px rgba(123,108,255,0.3);
+            transition: all 0.2s ease;
+        }
+
+        #searchBtn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(123,108,255,0.4);
+        }
+
+        .platform-nav {
+            background: rgba(20,18,43,0.7);
+            backdrop-filter: blur(10px);
+            padding: 16px 24px;
+            display: flex;
+            gap: 12px;
+            overflow-x: auto;
+            border-bottom: 1px solid var(--border-soft);
+        }
+
+        .platform-nav::-webkit-scrollbar {
+            height: 6px;
+        }
+
+        .platform-nav::-webkit-scrollbar-thumb {
+            background: var(--accent-primary);
+            border-radius: 3px;
+        }
+
+        .platform-btn {
+            padding: 10px 20px;
+            border-radius: 10px;
+            background: var(--bg-surface-soft);
+            border: 1px solid var(--border-soft);
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            white-space: nowrap;
+            transition: all 0.2s ease;
+        }
+
+        .platform-btn:hover, .platform-btn.active {
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            color: white;
+            border-color: transparent;
+            transform: translateY(-1px);
+        }
+
+        main {
+            flex: 1;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px 24px 120px;
+            width: 100%;
+        }
+
+        .section-title {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 24px;
+            letter-spacing: -0.5px;
+        }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 24px;
+            margin-bottom: 48px;
+        }
+
+        .content-card {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-soft);
+            border-radius: 14px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .content-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 32px rgba(0,0,0,0.5);
+            border-color: rgba(255,255,255,0.12);
+        }
+
+        .thumbnail-wrapper {
+            position: relative;
+            width: 100%;
+            padding-top: 56.25%;
+            background: linear-gradient(135deg, #2a275c, #1b1840);
+            overflow: hidden;
+        }
+
+        .content-thumbnail {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+
+
+        .content-info {
+            padding: 16px;
+        }
+
+        .content-title {
+            font-size: 16px;
+            font-weight: 600;
+            line-height: 1.4;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .content-meta {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .content-source {
+            color: var(--accent-secondary);
+            font-weight: 600;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 80px 20px;
+        }
+
+        .spinner {
+            width: 46px;
+            height: 46px;
+            border: 4px solid rgba(255,255,255,0.15);
+            border-top-color: var(--accent-primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(180deg, rgba(20,18,43,0.95), rgba(20,18,43,0.98));
+            backdrop-filter: blur(20px);
+            border-top: 1px solid var(--border-soft);
+            z-index: 100;
+        }
+
+        .filter-nav {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 16px 24px;
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        .filter-btn {
+            padding: 12px 32px;
+            border-radius: 10px;
+            background: var(--bg-surface-soft);
+            border: 1px solid var(--border-soft);
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+
+        .filter-btn:hover {
+            background: var(--bg-surface);
+            border-color: rgba(255,255,255,0.12);
+        }
+
+        .filter-btn.active {
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            color: white;
+            border-color: transparent;
+            box-shadow: 0 4px 16px rgba(123,108,255,0.3);
+        }
+
+        @media (max-width: 768px) {
+            .content-grid {
+                grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+                gap: 16px;
+            }
+
+            .search-container {
+                min-width: 100%;
+                max-width: 100%;
+            }
+
+            main {
+                padding: 24px 20px 120px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <div class="logo-section">
+                <svg class="logo-svg" viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <radialGradient id="darkPurple" cx="30%" cy="30%">
+                            <stop offset="0%" style="stop-color:#5B21B6;stop-opacity:1" />
+                            <stop offset="100%" style="stop-color:#7C3AED;stop-opacity:1" />
+                        </radialGradient>
+                        <radialGradient id="brightPurple" cx="50%" cy="50%">
+                            <stop offset="0%" style="stop-color:#A78BFA;stop-opacity:1" />
+                            <stop offset="100%" style="stop-color:#8B5CF6;stop-opacity:1" />
+                        </radialGradient>
+                    </defs>
+                    <path d="M 200,50 C 110,50 40,120 40,200 C 40,280 110,350 190,350 C 250,350 300,310 320,255 C 310,290 270,315 225,315 C 165,315 115,265 115,205 C 115,155 150,115 195,105 Q 180,85 155,75 Q 175,60 200,50 Z" fill="url(#darkPurple)" />
+                    <path d="M 240,70 C 300,85 345,140 345,205 C 345,285 280,350 200,350 C 140,350 90,310 70,255 C 85,295 125,325 175,330 C 240,335 295,285 295,220 C 295,165 255,120 205,110 Q 220,90 245,80 Q 242,75 240,70 Z" fill="url(#brightPurple)" />
+                </svg>
+                <span class="logo-text">WayPoint</span>
+            </div>
+            <div class="search-container">
+                <input type="text" id="searchInput" placeholder="Search for content...">
+                <button id="searchBtn">Search</button>
+            </div>
+        </div>
+    </header>
+
+    <nav class="platform-nav">
+        <button class="platform-btn active" data-platform="all">All Platforms</button>
+        <button class="platform-btn" data-platform="youtube">YouTube</button>
+        <button class="platform-btn" data-platform="tiktok">TikTok</button>
+        <button class="platform-btn" data-platform="instagram">Instagram</button>
+        <button class="platform-btn" data-platform="twitch">Twitch</button>
+        <button class="platform-btn" data-platform="cnn">CNN</button>
+        <button class="platform-btn" data-platform="fox">Fox</button>
+        <button class="platform-btn" data-platform="bbc">BBC</button>
+    </nav>
+
+    <main>
+        <div id="loading" class="loading hidden">
+            <div class="spinner"></div>
+            <p>Discovering content...</p>
+        </div>
+
+        <div id="results">
+            <h2 class="section-title">Top This Week</h2>
+            <div class="content-grid" id="contentGrid"></div>
+        </div>
+    </main>
+
+    <footer>
+        <nav class="filter-nav">
+            <button class="filter-btn active" data-filter="all">All</button>
+            <button class="filter-btn" data-filter="social">Social</button>
+            <button class="filter-btn" data-filter="news">News</button>
+        </nav>
+    </footer>
+
+    <script>
+        // Sample data
+        const sampleContent = [
+            {
+                title: "Amazing Tech Review - The Future is Here",
+                source: "TechVision",
+                platform: "youtube",
+                duration: "14:50",
+                type: "social",
+                thumbnail: "https://picsum.photos/seed/1/640/360"
+            },
+            {
+                title: "Breaking: Major Policy Changes Announced",
+                source: "CNN News",
+                platform: "cnn",
+                duration: "5:30",
+                type: "news",
+                thumbnail: "https://picsum.photos/seed/2/640/360"
+            },
+            {
+                title: "Live Gaming Session - Epic Moments",
+                source: "GameMaster",
+                platform: "twitch",
+                duration: "43:19",
+                type: "social",
+                thumbnail: "https://picsum.photos/seed/3/640/360"
+            },
+            {
+                title: "Travel Vlog: Hidden Gems Around the World",
+                source: "Wanderlust Daily",
+                platform: "youtube",
+                duration: "13:31",
+                type: "social",
+                thumbnail: "https://picsum.photos/seed/4/640/360"
+            },
+            {
+                title: "Financial Markets Update - Weekly Review",
+                source: "BBC Business",
+                platform: "bbc",
+                duration: "12:59",
+                type: "news",
+                thumbnail: "https://picsum.photos/seed/5/640/360"
+            },
+            {
+                title: "Cooking Tutorial: Gourmet Made Simple",
+                source: "ChefLife",
+                platform: "instagram",
+                duration: "8:45",
+                type: "social",
+                thumbnail: "https://picsum.photos/seed/6/640/360"
+            },
+            {
+                title: "Political Debate: Key Issues Discussed",
+                source: "Fox News",
+                platform: "fox",
+                duration: "25:12",
+                type: "news",
+                thumbnail: "https://picsum.photos/seed/7/640/360"
+            },
+            {
+                title: "Fashion Week Highlights 2024",
+                source: "StyleDaily",
+                platform: "tiktok",
+                duration: "6:20",
+                type: "social",
+                thumbnail: "https://picsum.photos/seed/8/640/360"
+            }
+        ];
+
+        let currentFilter = 'all';
+        let currentPlatform = 'all';
+
+        function renderContent() {
+            const grid = document.getElementById('contentGrid');
+            grid.innerHTML = '';
+
+            const filtered = sampleContent.filter(item => {
+                const matchesFilter = currentFilter === 'all' || item.type === currentFilter;
+                const matchesPlatform = currentPlatform === 'all' || item.platform === currentPlatform;
+                return matchesFilter && matchesPlatform;
+            });
+
+            filtered.forEach(item => {
+                const card = document.createElement('div');
+                card.className = 'content-card';
+                card.innerHTML = `
+                    <div class="thumbnail-wrapper">
+                        <img src="${item.thumbnail}" alt="${item.title}" class="content-thumbnail">
+                        <span class="duration-badge">${item.duration}</span>
+                    </div>
+                    <div class="content-info">
+                        <div class="content-title">${item.title}</div>
+                        <div class="content-meta">
+                            <span class="content-source">${item.source}</span>
+                        </div>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        // Filter buttons
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                currentFilter = btn.dataset.filter;
+                renderContent();
+            });
+        });
+
+        // Platform buttons
+        document.querySelectorAll('.platform-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.platform-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                currentPlatform = btn.dataset.platform;
+                renderContent();
+            });
+        });
+
+        // Search functionality
+        document.getElementById('searchBtn').addEventListener('click', () => {
+            const query = document.getElementById('searchInput').value;
+            if (query) {
+                alert(`Searching for: ${query}`);
+            }
+        });
+
+        document.getElementById('searchInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                document.getElementById('searchBtn').click();
+            }
+        });
+
+        // Initial render
+        renderContent();
+    </script>
+</body>
+</html>
